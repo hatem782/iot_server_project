@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ESP32 PROJECT</title>
+    <style>
+      .on {
+        color: white;
+      }
+      .off {
+        background-color: gray;
+        color: black;
+      }
+      .RED {
+        background-color: red;
+      }
+      .ORANGE {
+        background-color: orange;
+      }
+      .GREEN {
+        background-color: green;
+      }
+      .BLUE {
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>LED Control</h1>
+    <button id="RED" class="off">RED OFF</button>
+    <button id="ORANGE" class="off">ORANGE OFF</button>
+    <button id="GREEN" class="off">GREEN OFF</button>
+    <button id="BLUE" class="off">BLUE OFF</button>
+    <button id="WHITE" class="off">WHITE OFF</button>
+  </body>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const socket = new WebSocket("ws://localhost:8080");
+
+      socket.addEventListener("open", function (event) {
+        console.log("WebSocket connected");
+      });
+
+      function toggleLED(led) {
+        const button = document.getElementById(led);
+        let command = led + "_ON";
+
+        if (button.classList.contains("on")) {
+          command = led + "_OFF";
+          button.classList.remove("on");
+          button.classList.add("off");
+          button.innerText = led + " OFF";
+          button.style.backgroundColor = "";
+        } else {
+          button.classList.remove("off");
+          button.classList.add("on");
+          button.innerText = led + " ON";
+          button.style.backgroundColor = led.toLowerCase();
+        }
+
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(command);
+        } else {
+          console.log("WebSocket not connected yet.");
+        }
+      }
+
+      document.getElementById("RED").addEventListener("click", function () {
+        toggleLED("RED");
+      });
+
+      document.getElementById("BLUE").addEventListener("click", function () {
+        toggleLED("BLUE");
+      });
+
+      document.getElementById("GREEN").addEventListener("click", function () {
+        toggleLED("GREEN");
+      });
+
+      document.getElementById("ORANGE").addEventListener("click", function () {
+        toggleLED("ORANGE");
+      });
+
+      document.getElementById("WHITE").addEventListener("click", function () {
+        toggleLED("WHITE");
+      });
+    });
+  </script>
+</html>
